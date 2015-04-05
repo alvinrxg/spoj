@@ -1,4 +1,5 @@
 // http://www.spoj.com/problems/AP2/
+// HISTORY:  http://www.spoj.com/status/AP2,alvin_rxg/
 
 #include <stdio.h>
 
