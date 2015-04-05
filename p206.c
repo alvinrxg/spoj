@@ -1,92 +1,120 @@
-/* http://www.spoj.pl/problems/BITMAP/ */
+// http://www.spoj.com/problems/BITMAP/
 
-/* bfs...
- * already better, but still TLE... */
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <limits.h>
 
-int n, m;
-char bitmap[182][183];
-int distance[182][182];
+typedef struct POINT {
+	int x;
+	int y;
+} POINT;
 
+int targetMap[182][182];
 
-void calc_dist(int x, int y)
+int calc(char matrix[182][183], int m, int n)
 {
-	int l;
-	int i, j;
-	int f = 1;
+	POINT pointList[33124];
+	int pointNo;
+	int i, j, k;
 
-	if (y == 0 && x) {
-		l = distance[x - 1][0] - 1;
-	}
-	else if (y) {
-		l = distance[x][y - 1] - 1;
-	}
-	else {
-		l = 1;
-	}
-	do {
-		for (i = 0; i <= l; i++) {
-			j = l - i;
-			// 4 directions
-			if (	   (i + x < n  && j + y < m  && bitmap[x + i][y + j] == '1')
-				|| (i + x < n  && y - j >= 0 && bitmap[x + i][y - j] == '1')
-				|| (x - i >= 0 && j + y < m  && bitmap[x - i][y + j] == '1')
-				|| (x - i >= 0 && y - j >= 0 && bitmap[x - i][y - j] == '1'))
-			{
-				distance[x][y] = l;
-				f = 0;
-				break;
+	pointNo = 0;
+	i = 0;
+	while (i < m) {
+		j = 0;
+		while (j < n) {
+			if (matrix[i][j] == '1') {
+				POINT p = {i, j};
+				// pointList[pointNo].x = i;
+				// pointList[pointNo].y = j;
+				pointList[pointNo] = p;
+				pointNo ++;
 			}
+			j++;
 		}
-
-	} while (f && ++l);
-}
-
-void calc()
-{
-	int i, j;
-
-	for (i = 0; i < n; i++) {
-		for (j = 0; j < m; j++) {
-			if (bitmap[i][j] == '1')
-				distance[i][j] = 0;
-			else
-				calc_dist(i, j);
-		}
+		i++;
 	}
-}
 
-void prints()
-{
-	int i, j;
-	for (i = 0; i < n; i++) {
-		for (j = 0; j < m; j++) {
-			if (j == 0) {
-				printf("%d", distance[i][j]);
+	// i = 0;
+	// while (i < pointNo) {
+		// printf("point: %d %d\n", pointList[i].x, pointList[i].y);
+		// i++;
+	// }
+	// return;
+
+
+	i = 0;
+	while (i < m) {
+		j = 0;
+		while (j < n) {
+			if (matrix[i][j] == '0') {
+				for (k = 0; k < pointNo; k++) {
+					int dist = abs(i - pointList[k].x) + abs(j - pointList[k].y);
+					if (dist < targetMap[i][j]) {
+						targetMap[i][j] = dist;
+					}
+				}
 			}
-			else
-				printf(" %d", distance[i][j]);
+			else {
+				targetMap[i][j] = 0;
+			}
+			j++;
+		}
+		i++;
+	}
+
+
+
+
+	i = 0;
+	while (i < m) {
+		j = 0;
+		while (j < n) {
+			printf ("%d ", targetMap[i][j]);
+			j++;
 		}
 		printf("\n");
+		i++;
 	}
+
+	return 0;
 }
 
-int main()
+int main ()
 {
 	int t;
-	int i;
+	int i, j;
+	int m, n;
+	char matrix[182][183];
 
 	scanf("%d", &t);
-	while(t--) {
-		scanf("%d %d", &n, &m);
-		for (i = 0; i < n; i++)
-			scanf("%s", bitmap[i]);
-		calc();
-		prints();
+	i = 0;
+	while (i++ < t) {
+		scanf("%d %d", &m, &n);
+
+		j = 0;
+		while(j < m) {
+			scanf("%s", matrix[j]);
+
+			j++;
+		}
+
+		int a,b;
+		a = 0;
+		while (a < 182) {
+			b = 0;
+			while (b < 182) {
+				targetMap[a][b] = INT_MAX;
+				b++;
+			}
+			a++;
+		}
+
+		calc(matrix, m, n);
 	}
+
+
+
+
 
 	return 0;
 }
